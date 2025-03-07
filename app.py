@@ -76,7 +76,7 @@ def add_manually():
         current_qty = df.loc[idx, "Quantity"]
         df.loc[idx, "Quantity"] = current_qty + quantity
         car_id = df.loc[idx, "ID"]
-        print(f"\n✅ Added {quantity} to existing inventory (ID: {car_id})")
+        print(f"\nAdded {quantity} to existing inventory (ID: {car_id})")
         print(f"Total quantity now: {df.loc[idx, 'Quantity']}")
     else:
         # Add new car
@@ -89,7 +89,7 @@ def add_manually():
             "Quantity": quantity
         }])
         df = pd.concat([df, new_row], ignore_index=True)
-        print(f"\n✅ Added new car to inventory (ID: {len(df)})")
+        print(f"\nAdded new car to inventory (ID: {len(df)})")
     
     save_inventory(df)
 
