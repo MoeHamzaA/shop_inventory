@@ -32,16 +32,16 @@ def view_inventory():
     """Display current inventory"""
     df = load_inventory()
     if df.empty:
-        print("\n📋 Inventory is empty.")
+        print("\nInventory is empty.")
     else:
-        print("\n📋 Current Inventory:")
+        print("\nCurrent Inventory:")
         print(df.to_string(index=False))
 
 def add_manually():
     """Add car to inventory manually"""
     df = load_inventory()
     
-    print("\n✏️ Adding New Car Manually")
+    print("\nAdding New Car Manually")
     company = input("Enter company: ").strip().title()
     model = input("Enter model: ").strip().title()
     
@@ -76,7 +76,7 @@ def add_manually():
         current_qty = df.loc[idx, "Quantity"]
         df.loc[idx, "Quantity"] = current_qty + quantity
         car_id = df.loc[idx, "ID"]
-        print(f"\n✅ Added {quantity} to existing inventory (ID: {car_id})")
+        print(f"\nAdded {quantity} to existing inventory (ID: {car_id})")
         print(f"Total quantity now: {df.loc[idx, 'Quantity']}")
     else:
         # Add new car
@@ -89,7 +89,7 @@ def add_manually():
             "Quantity": quantity
         }])
         df = pd.concat([df, new_row], ignore_index=True)
-        print(f"\n✅ Added new car to inventory (ID: {len(df)})")
+        print(f"\nAdded new car to inventory (ID: {len(df)})")
     
     save_inventory(df)
 
@@ -98,10 +98,10 @@ def add_from_database():
     try:
         db = pd.read_csv(database_file)
     except (FileNotFoundError, pd.errors.EmptyDataError):
-        print("\n❌ Dealership database not found or empty.")
+        print("\nDealership database not found or empty.")
         return
     
-    print("\n🔍 Adding Car from Dealership Database")
+    print("\nAdding Car from Dealership Database")
     
     # List available companies
     companies = sorted(db["Company"].unique())
@@ -175,7 +175,7 @@ def add_from_database():
         current_qty = df.loc[idx, "Quantity"]
         df.loc[idx, "Quantity"] = current_qty + quantity
         car_id = df.loc[idx, "ID"]
-        print(f"\n✅ Added {quantity} to existing inventory (ID: {car_id})")
+        print(f"\nAdded {quantity} to existing inventory (ID: {car_id})")
         print(f"Total quantity now: {df.loc[idx, 'Quantity']}")
     else:
         # Add new car
@@ -188,7 +188,7 @@ def add_from_database():
             "Quantity": quantity
         }])
         df = pd.concat([df, new_row], ignore_index=True)
-        print(f"\n✅ Added new car to inventory (ID: {len(df)})")
+        print(f"\nAdded new car to inventory (ID: {len(df)})")
     
     save_inventory(df)
 
@@ -196,10 +196,10 @@ def remove_inventory():
     """Remove cars from inventory by ID"""
     df = load_inventory()
     if df.empty:
-        print("\n📋 Inventory is empty.")
+        print("\nInventory is empty.")
         return
     
-    print("\n🗑️ Remove Car from Inventory")
+    print("\nRemove Car from Inventory")
     view_inventory()
     
     # Get car ID to remove
@@ -237,10 +237,10 @@ def remove_inventory():
     # Remove cars
     if quantity_to_remove >= current_quantity:
         df = df[~mask]
-        print(f"\n✅ Removed all {car_info['Company']} {car_info['Model']} (ID: {car_id}) from inventory")
+        print(f"\nRemoved all {car_info['Company']} {car_info['Model']} (ID: {car_id}) from inventory")
     else:
         df.loc[car_idx, "Quantity"] -= quantity_to_remove
-        print(f"\n✅ Removed {quantity_to_remove} {car_info['Company']} {car_info['Model']} from inventory")
+        print(f"\nRemoved {quantity_to_remove} {car_info['Company']} {car_info['Model']} from inventory")
         print(f"Remaining quantity: {df.loc[car_idx, 'Quantity']}")
     
     save_inventory(df)
@@ -249,10 +249,10 @@ def search_inventory():
     """Search inventory by various criteria"""
     df = load_inventory()
     if df.empty:
-        print("\n📋 Inventory is empty.")
+        print("\nInventory is empty.")
         return
     
-    print("\n🔍 Search Inventory")
+    print("\nSearch Inventory")
     print("1. Search by Company")
     print("2. Search by Model")
     print("3. Search by Year")
@@ -281,13 +281,13 @@ def search_inventory():
     if results.empty:
         print("\nNo matching cars found.")
     else:
-        print("\n📋 Search Results:")
+        print("\nSearch Results:")
         print(results.to_string(index=False))
 
 def main():
     """Main program loop"""
     while True:
-        print("\n🚗 Car Inventory Management System 🚗")
+        print("\nCar Inventory Management System")
         print("=" * 40)
         print("1. View Inventory")
         print("2. Add Inventory")
@@ -301,7 +301,7 @@ def main():
         if choice == "1":
             view_inventory()
         elif choice == "2":
-            print("\n📦 Add Inventory")
+            print("\nAdd Inventory")
             print("1. Add Manually")
             print("2. Add from Dealership Database")
             
@@ -315,10 +315,10 @@ def main():
         elif choice == "4":
             search_inventory()
         elif choice == "5":
-            print("\n👋 Thank you for using Car Inventory Management System. Goodbye!")
+            print("\nThank you for using Car Inventory Management System. Goodbye!")
             break
         else:
-            print("\n❌ Invalid choice, please try again.")
+            print("\nInvalid choice, please try again.")
         
         input("\nPress Enter to continue...")
         clear_screen()
