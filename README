@@ -1,0 +1,55 @@
+# Car Inventory Management System
+
+An inventory management system for automation as per the client's request.
+
+## Features
+
+- View inventory (Must Have)
+- Add to inventory (Must Have)
+- Remove from Inventory (Must Have)
+- Search inventory by company, model, year, or color (Must Have)
+- Automatic duplicate detection - adds to existing quantity when the same car is added (Nice to have)
+
+## Prerequisites
+
+- Python 3.6 or higher
+- pandas library
+
+## Usage
+
+1. Run the script:
+```bash
+python car_inventory.py
+```
+
+2. Navigate through the menu options:
+   - Option 1: View the current inventory
+   - Option 2: Add cars to inventory (manually or from database)
+   - Option 3: Remove cars from inventory
+   - Option 4: Search inventory by various criteria
+   - Option 5: Exit the application
+
+## Data Storage
+
+- Inventory data is stored in a CSV file named `inventory.csv`
+- The dealership database is stored in a CSV file named `dealership.csv`
+- Both files are created automatically if they don't exist
+
+## Example Workflow
+
+1. First run: The program will create empty inventory files
+2. Add some cars either manually or from the dealership database
+3. View inventory to see all cars
+4. Search for specific cars by various criteria
+5. Remove cars when they're sold or no longer available
+
+## Notes
+
+- The ID field is managed automatically
+- When adding cars that already exist in inventory, the quantity is automatically updated
+- The application automatically handles case-sensitivity in searches and data entry
+
+## Troubleshooting
+
+- If the application can't find the dealership database, ensure `dealership.csv` is in the same directory as the script
+- If you encounter any errors reading or writing CSV files, check file permissions
