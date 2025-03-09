@@ -261,7 +261,6 @@ def search_inventory():
     choice = input("\nEnter search option (0 to cancel): ").strip()
     if choice == "0":
         return
-    
     if choice == "1":
         search_term = input("Enter company name: ").strip().lower()
         results = df[df["Company"].str.lower().str.contains(search_term)]
@@ -295,7 +294,6 @@ def main():
         print("4. Search Inventory")
         print("5. Exit")
         print("=" * 40)
-        
         choice = input("Enter your choice: ").strip()
         
         if choice == "1":
@@ -304,7 +302,6 @@ def main():
             print("\nAdd Inventory")
             print("1. Add Manually")
             print("2. Add from Dealership Database")
-            
             add_choice = input("\nEnter your choice (0 to cancel): ").strip()
             if add_choice == "1":
                 add_manually()
@@ -319,7 +316,6 @@ def main():
             break
         else:
             print("\nInvalid choice, please try again.")
-        
         input("\nPress Enter to continue...")
         clear_screen()
 
