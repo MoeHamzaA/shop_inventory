@@ -23,7 +23,7 @@ The client requests to add, remove, and search inventory at will. He also reques
 ## Features
 
 Features include:
-- Viewing inventory (Has a)
+- Viewing inventory
 - Adding to the inventory (you can add from the database if you wish)
 - Removing from the inventory
 - Searching from the inventory
