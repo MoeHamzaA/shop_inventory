@@ -78,7 +78,7 @@ def add_manually():
            (df["Colour"].str.lower() == colour.lower())
     
     if any(mask):
-        # Car exists, increment quantity
+        # Car exists, increment quantity 
         idx = df.loc[mask].index[0]
         current_qty = df.loc[idx, "Quantity"]
         df.loc[idx, "Quantity"] = current_qty + quantity
@@ -102,12 +102,14 @@ def add_manually():
 
 def add_from_database():
     """Add car to inventory by selecting from dealership database"""
+    #check to see if database is accessible/valid 
     try:
         db = pd.read_csv(database_file)
+        #if not throw an exception for an error when the database isnt found or empty
     except (FileNotFoundError, pd.errors.EmptyDataError):
         print("\nDealership database not found or empty.")
         return
-    
+    # message to show the user that the ading is working
     print("\nAdding Car from Dealership Database")
     
     # List available companies
@@ -118,6 +120,7 @@ def add_from_database():
     
     # Select company
     while True:
+        # asks the user for which company the car belongs to
         try:
             company_idx = int(input("\nSelect company number (0 to cancel): ").strip())
             if company_idx == 0:
@@ -126,6 +129,7 @@ def add_from_database():
                 selected_company = companies[company_idx - 1]
                 break
             print(f"Please enter a number between 1 and {len(companies)}")
+            #exception for an error when a proper number isnt entered.
         except ValueError:
             print("Please enter a valid number.")
     
@@ -140,6 +144,7 @@ def add_from_database():
     
     # Select model
     while True:
+        # asks the user for the model of the car they want to add.
         try:
             model_idx = int(input("\nSelect model number (0 to cancel): ").strip())
             if model_idx == 0:
@@ -148,10 +153,11 @@ def add_from_database():
                 selected_model = models[model_idx - 1]
                 break
             print(f"Please enter a number between 1 and {len(models)}")
+            #another exception for when they enter something incorrect
         except ValueError:
             print("Please enter a valid number.")
     
-    # Get remaining details
+    # Get remaining details such as the year of the car
     while True:
         year = input("Enter year: ").strip()
         if year.isdigit() and len(year) == 4:
@@ -159,13 +165,17 @@ def add_from_database():
         print("Invalid year format. Please enter a 4-digit year.")
     
     colour = input("Enter colour: ").strip().title()
-    
+
+    #asks the user for the quantity of the car they would like to add
     while True:
         try:
             quantity = int(input("Enter quantity: ").strip())
+            #if the quantity is proper we break out an move to the next step, if not we throw an error exception when invalid and a print statement which reloops when the number is less than 09
             if quantity > 0:
                 break
             print("Quantity must be greater than 0.")
+
+        #value error if the user doesnt enter a number
         except ValueError:
             print("Please enter a valid number.")
     
@@ -196,21 +206,24 @@ def add_from_database():
         }])
         df = pd.concat([df, new_row], ignore_index=True)
         print(f"\nAdded new car to inventory (ID: {len(df)})")
-    
+
+    #save the inventory right after adding to make sure it stays up to date 
     save_inventory(df)
 
 def remove_inventory():
     """Remove cars from inventory by ID"""
     df = load_inventory()
+    # if inventory is empty display the message to the user
     if df.empty:
         print("\nInventory is empty.")
         return
-    
+    #else just show what the database looks like currently and ask the user to select which one to remove
     print("\nRemove Car from Inventory")
     view_inventory()
     
     # Get car ID to remove
     while True:
+        # try except to ask the user what numbered car they want to remove, if they dont enter a valid number throw and error, and if they pick 0 cancel them out of the remove.
         try:
             car_id = input("\nEnter car ID to remove (0 to cancel): ").strip()
             if car_id == "0":
@@ -227,7 +240,8 @@ def remove_inventory():
     car_idx = df.loc[mask].index[0]
     car_info = df.loc[car_idx]
     current_quantity = car_info["Quantity"]
-    
+
+    # print out the selected car and its quantity to the user
     print(f"\nSelected car: {car_info['Company']} {car_info['Model']} ({car_info['Year']}, {car_info['Colour']})")
     print(f"Current quantity: {current_quantity}")
     
@@ -242,9 +256,12 @@ def remove_inventory():
             print("Please enter a valid number.")
     
     # Remove cars
+    # if the quantity is greater than the quanityt of the stock, remove all of that specific stock.
     if quantity_to_remove >= current_quantity:
         df = df[~mask]
         print(f"\nRemoved all {car_info['Company']} {car_info['Model']} (ID: {car_id}) from inventory")
+
+    #otherwise remove specified amount
     else:
         df.loc[car_idx, "Quantity"] -= quantity_to_remove
         print(f"\nRemoved {quantity_to_remove} {car_info['Company']} {car_info['Model']} from inventory")
@@ -252,19 +269,22 @@ def remove_inventory():
     
     save_inventory(df)
 
+#Search function which functions like an inventory viewer through different prompts.
 def search_inventory():
     """Search inventory by various criteria"""
     df = load_inventory()
     if df.empty:
         print("\nInventory is empty.")
         return
-    
+
+    #initial prints to help the user follow where to go
     print("\nSearch Inventory")
     print("1. Search by Company")
     print("2. Search by Model")
     print("3. Search by Year")
     print("4. Search by Colour")
-    
+
+    #if statements to check what was pressed and give a follow up messgae to continue moving through the program (ie. if 1, ask for company name)
     choice = input("\nEnter search option (0 to cancel): ").strip()
     if choice == "0":
         return
@@ -283,7 +303,8 @@ def search_inventory():
     else:
         print("Invalid option.")
         return
-    
+
+    #if else for when the user enters an incorrect term in searching
     if results.empty:
         print("\nNo matching cars found.")
     else:
@@ -292,6 +313,7 @@ def search_inventory():
 
 def main():
     """Main program loop"""
+    #main function to actually run the program. has all the options to move through the program efficiently.
     while True:
         print("\nCar Inventory Management System")
         print("=" * 40)
