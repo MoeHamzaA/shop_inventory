@@ -295,11 +295,11 @@ def main():
     while True:
         print("\nCar Inventory Management System")
         print("=" * 40)
-        print("1. View Inventory")
-        print("2. Add Inventory")
-        print("3. Remove Inventory")
-        print("4. Search Inventory")
-        print("5. Exit")
+        print("1. * View Inventory *")
+        print("2. * Add Inventory *")
+        print("3. * Remove Inventory *")
+        print("4. * Search Inventory *")
+        print("5. * Exit *")
         print("=" * 40)
         choice = input("Enter your choice: ").strip()
         
