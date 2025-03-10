@@ -9,6 +9,7 @@ def load_inventory():
     """Load inventory from CSV file or create empty DataFrame if file doesn't exist"""
     try:
         df = pd.read_csv(inventory_file)
+        # if the file is empty return a base/empty data frame with respect to tehir columns
         if df.empty:
             return pd.DataFrame(columns=["ID", "Company", "Model", "Year", "Colour", "Quantity"])
         # Ensure ID column exists
@@ -16,36 +17,42 @@ def load_inventory():
             df["ID"] = range(1, len(df) + 1)
         return df
     except (FileNotFoundError, pd.errors.EmptyDataError):
+        # exception to return an empty data frame when the file doesnt exist or runs into an error.
         return pd.DataFrame(columns=["ID", "Company", "Model", "Year", "Colour", "Quantity"])
 
 def save_inventory(df):
     """Save inventory DataFrame to CSV file"""
     # Ensure IDs are sequential
-    df["ID"] = range(1, len(df) + 1)
-    df.to_csv(inventory_file, index=False)
+    df["ID"] = range(1, len(df) + 1) # reset each ID to maintain consistency after saving so that we dont have issues with another save
+    df.to_csv(inventory_file, index=False) # Save it to CSV, while also maintaining the proper column as to not mess things up
 
 def clear_screen():
     """Clear the console screen"""
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('cls' if os.name == 'nt' else 'clear') # Windows uses cls and others use clear
 
 def view_inventory():
     """Display current inventory"""
+    #loads our inventory to check for later
     df = load_inventory()
+    # if empty return inventory empty, else you show the inventory
     if df.empty:
         print("\nInventory is empty.")
     else:
         print("\nCurrent Inventory:")
         print(df.to_string(index=False))
 
+#allows the user to add cars manually whenever needed.
 def add_manually():
+    
     """Add car to inventory manually"""
     df = load_inventory()
-    
+
+    #initialization of variables ie company and model of cars
     print("\nAdding New Car Manually")
     company = input("Enter company: ").strip().title()
     model = input("Enter model: ").strip().title()
     
-    # Validate year input
+    # Validate year input for formatting
     while True:
         year = input("Enter year: ").strip()
         if year.isdigit() and len(year) == 4:
@@ -54,7 +61,7 @@ def add_manually():
     
     colour = input("Enter colour: ").strip().title()
     
-    # Validate quantity input
+    # Validate quantity input to make sure it stays positive 
     while True:
         try:
             quantity = int(input("Enter quantity: ").strip())
@@ -91,7 +98,7 @@ def add_manually():
         df = pd.concat([df, new_row], ignore_index=True)
         print(f"\nAdded new car to inventory (ID: {len(df)})")
     
-    save_inventory(df)
+    save_inventory(df) # save inventory after all this to keep it up to date
 
 def add_from_database():
     """Add car to inventory by selecting from dealership database"""
