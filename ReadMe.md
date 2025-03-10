@@ -10,7 +10,7 @@ The client requests to add, remove, and search inventory at will. He also reques
 
 1. Run the script:
    ```bash
-   python app.py
+   python car_inventory.py
    ```
 
 2. Navigate through the menu options:
