@@ -1,19 +1,10 @@
-# Car Inventory Management System
+# Automation Inventory System
 
-An inventory management system for automation as per the client's request.
+This is a automation inventory system that checks branded and non-branded cars in client inventory to sell or to maintain.
 
-## Features
+## Client Requests for system
 
-- View inventory (Must Have)
-- Add to inventory (Must Have)
-- Remove from Inventory (Must Have)
-- Search inventory by company, model, year, or color (Must Have)
-- Automatic duplicate detection - adds to existing quantity when the same car is added (Nice to have)
-
-## Prerequisites
-
-- Python 3.6 or higher
-- pandas library
+Client requests to add, remove, and to search inventory at will. He would've also like to have a login system for adminstrative use for his employees and himself. We plan to add that for Iterative 3. We also have plans to create an appealing GUI using tailwind css.
 
 ## Usage
 
@@ -29,27 +20,14 @@ python car_inventory.py
    - Option 4: Search inventory by various criteria
    - Option 5: Exit the application
 
-## Data Storage
+## Features
 
-- Inventory data is stored in a CSV file named `inventory.csv`
-- The dealership database is stored in a CSV file named `dealership.csv`
-- Both files are created automatically if they don't exist
+Features inclue:
+   Vewing inventory (Has a)
+   Adding to the inventory (you can add from the database if you wish)
+   Removing from the inventory
+   Searching from the inventory
+   A car database for ease of client
 
-## Example Workflow
-
-1. First run: The program will create empty inventory files
-2. Add some cars either manually or from the dealership database
-3. View inventory to see all cars
-4. Search for specific cars by various criteria
-5. Remove cars when they're sold or no longer available
-
-## Notes
-
-- The ID field is managed automatically
-- When adding cars that already exist in inventory, the quantity is automatically updated
-- The application automatically handles case-sensitivity in searches and data entry
-
-## Troubleshooting
-
-- If the application can't find the dealership database, ensure `dealership.csv` is in the same directory as the script
-- If you encounter any errors reading or writing CSV files, check file permissions
+## Run video
+https://drive.google.com/file/d/1EuQnZYURLVs5a60i8if76s5-CfE4KPDR/view?usp=sharing 
