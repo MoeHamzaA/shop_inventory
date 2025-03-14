@@ -1,0 +1,461 @@
+Company,Model
+Toyota,Camry
+Toyota,Corolla
+Toyota,RAV4
+Toyota,Highlander
+Toyota,Tacoma
+Toyota,Prius
+Toyota,4Runner
+Toyota,Sienna
+Toyota,Tundra
+Toyota,Land Cruiser
+Honda,Civic
+Honda,Accord
+Honda,CR-V
+Honda,Pilot
+Honda,Odyssey
+Honda,HR-V
+Honda,Ridgeline
+Honda,Fit
+Honda,Insight
+Honda,Passport
+Ford,F-150
+Ford,Mustang
+Ford,Explorer
+Ford,Escape
+Ford,Bronco
+Ford,Ranger
+Ford,Edge
+Ford,Expedition
+Ford,Maverick
+Ford,Transit
+Chevrolet,Silverado
+Chevrolet,Equinox
+Chevrolet,Malibu
+Chevrolet,Tahoe
+Chevrolet,Traverse
+Chevrolet,Suburban
+Chevrolet,Camaro
+Chevrolet,Colorado
+Chevrolet,Blazer
+Chevrolet,Trailblazer
+Nissan,Altima
+Nissan,Rogue
+Nissan,Sentra
+Nissan,Pathfinder
+Nissan,Frontier
+Nissan,Murano
+Nissan,Maxima
+Nissan,Kicks
+Nissan,Armada
+Nissan,Titan
+BMW,3 Series
+BMW,5 Series
+BMW,X3
+BMW,X5
+BMW,7 Series
+BMW,X1
+BMW,X7
+BMW,4 Series
+BMW,8 Series
+BMW,i4
+Mercedes-Benz,C-Class
+Mercedes-Benz,E-Class
+Mercedes-Benz,GLE
+Mercedes-Benz,GLC
+Mercedes-Benz,S-Class
+Mercedes-Benz,A-Class
+Mercedes-Benz,GLA
+Mercedes-Benz,GLB
+Mercedes-Benz,GLS
+Mercedes-Benz,EQS
+Audi,A4
+Audi,Q5
+Audi,A6
+Audi,Q7
+Audi,A3
+Audi,Q3
+Audi,A8
+Audi,Q8
+Audi,e-tron
+Audi,TT
+Hyundai,Elantra
+Hyundai,Tucson
+Hyundai,Santa Fe
+Hyundai,Sonata
+Hyundai,Kona
+Hyundai,Palisade
+Hyundai,Ioniq
+Hyundai,Venue
+Hyundai,Accent
+Hyundai,Nexo
+Kia,Forte
+Kia,Sportage
+Kia,Sorento
+Kia,Telluride
+Kia,Soul
+Kia,Seltos
+Kia,K5
+Kia,Carnival
+Kia,Niro
+Kia,EV6
+Volkswagen,Jetta
+Volkswagen,Tiguan
+Volkswagen,Atlas
+Volkswagen,Passat
+Volkswagen,Golf
+Volkswagen,Taos
+Volkswagen,ID.4
+Volkswagen,Arteon
+Volkswagen,Atlas Cross Sport
+Volkswagen,Golf GTI
+Subaru,Outback
+Subaru,Forester
+Subaru,Crosstrek
+Subaru,Legacy
+Subaru,Ascent
+Subaru,Impreza
+Subaru,WRX
+Subaru,BRZ
+Subaru,Solterra
+Subaru,XV
+Mazda,CX-5
+Mazda,Mazda3
+Mazda,CX-30
+Mazda,Mazda6
+Mazda,CX-9
+Mazda,MX-5 Miata
+Mazda,CX-50
+Mazda,MX-30
+Mazda,CX-90
+Mazda,CX-70
+Lexus,RX
+Lexus,ES
+Lexus,NX
+Lexus,IS
+Lexus,GX
+Lexus,UX
+Lexus,LS
+Lexus,LX
+Lexus,RC
+Lexus,LC
+Acura,MDX
+Acura,RDX
+Acura,TLX
+Acura,ILX
+Acura,NSX
+Acura,Integra
+Acura,RLX
+Acura,ZDX
+Acura,RSX
+Acura,TSX
+Volvo,XC60
+Volvo,XC90
+Volvo,S60
+Volvo,XC40
+Volvo,V60
+Volvo,S90
+Volvo,V90
+Volvo,C40 Recharge
+Volvo,S40
+Volvo,V40
+Jeep,Wrangler
+Jeep,Grand Cherokee
+Jeep,Cherokee
+Jeep,Compass
+Jeep,Renegade
+Jeep,Gladiator
+Jeep,Wagoneer
+Jeep,Grand Wagoneer
+Jeep,Commander
+Jeep,Patriot
+Land Rover,Range Rover
+Land Rover,Discovery
+Land Rover,Range Rover Sport
+Land Rover,Range Rover Evoque
+Land Rover,Defender
+Land Rover,Discovery Sport
+Land Rover,Range Rover Velar
+Land Rover,Freelander
+Land Rover,LR4
+Land Rover,LR2
+Porsche,911
+Porsche,Cayenne
+Porsche,Macan
+Porsche,Panamera
+Porsche,Taycan
+Porsche,718 Cayman
+Porsche,718 Boxster
+Porsche,Cayenne Coupe
+Porsche,Panamera Sport Turismo
+Porsche,Carrera GT
+Tesla,Model 3
+Tesla,Model Y
+Tesla,Model S
+Tesla,Model X
+Tesla,Cybertruck
+Tesla,Roadster
+Tesla,Semi
+Tesla,Model R
+Tesla,Model C
+Tesla,Model 2
+Buick,Encore
+Buick,Enclave
+Buick,Envision
+Buick,Regal
+Buick,LaCrosse
+Buick,Cascada
+Buick,Verano
+Buick,Envista
+Buick,Encore GX
+Buick,Avenir
+GMC,Sierra
+GMC,Terrain
+GMC,Acadia
+GMC,Yukon
+GMC,Canyon
+GMC,Hummer EV
+GMC,Savana
+GMC,Jimmy
+GMC,Envoy
+GMC,Sonoma
+Dodge,Challenger
+Dodge,Charger
+Dodge,Durango
+Dodge,Journey
+Dodge,Grand Caravan
+Dodge,Dart
+Dodge,Viper
+Dodge,Ram
+Dodge,Nitro
+Dodge,Avenger
+Chrysler,300
+Chrysler,Pacifica
+Chrysler,Voyager
+Chrysler,Town & Country
+Chrysler,PT Cruiser
+Chrysler,Sebring
+Chrysler,Aspen
+Chrysler,200
+Chrysler,Crossfire
+Chrysler,Concorde
+Cadillac,Escalade
+Cadillac,CT4
+Cadillac,CT5
+Cadillac,XT4
+Cadillac,XT5
+Cadillac,XT6
+Cadillac,Lyriq
+Cadillac,ATS
+Cadillac,CTS
+Cadillac,SRX
+Infiniti,Q50
+Infiniti,QX60
+Infiniti,QX50
+Infiniti,QX80
+Infiniti,Q60
+Infiniti,QX55
+Infiniti,Q70
+Infiniti,G37
+Infiniti,FX35
+Infiniti,JX35
+Lincoln,Navigator
+Lincoln,Aviator
+Lincoln,Corsair
+Lincoln,Nautilus
+Lincoln,Continental
+Lincoln,MKZ
+Lincoln,MKC
+Lincoln,MKX
+Lincoln,MKT
+Lincoln,Town Car
+Genesis,G70
+Genesis,G80
+Genesis,G90
+Genesis,GV70
+Genesis,GV80
+Genesis,GV60
+Genesis,Electrified G80
+Genesis,Electrified GV70
+Genesis,X
+Genesis,Mint
+Mini,Cooper
+Mini,Countryman
+Mini,Clubman
+Mini,Paceman
+Mini,Convertible
+Mini,Hardtop
+Mini,Coupe
+Mini,Roadster
+Mini,John Cooper Works
+Mini,Electric
+Jaguar,F-Pace
+Jaguar,XF
+Jaguar,E-Pace
+Jaguar,F-Type
+Jaguar,I-Pace
+Jaguar,XE
+Jaguar,XJ
+Jaguar,XK
+Jaguar,S-Type
+Jaguar,X-Type
+Mitsubishi,Outlander
+Mitsubishi,Eclipse Cross
+Mitsubishi,Mirage
+Mitsubishi,Outlander Sport
+Mitsubishi,Lancer
+Mitsubishi,Galant
+Mitsubishi,Montero
+Mitsubishi,i-MiEV
+Mitsubishi,Endeavor
+Mitsubishi,Raider
+Alfa Romeo,Giulia
+Alfa Romeo,Stelvio
+Alfa Romeo,4C
+Alfa Romeo,Tonale
+Alfa Romeo,Giulietta
+Alfa Romeo,MiTo
+Alfa Romeo,159
+Alfa Romeo,Brera
+Alfa Romeo,Spider
+Alfa Romeo,8C Competizione
+Fiat,500
+Fiat,500X
+Fiat,124 Spider
+Fiat,500L
+Fiat,Panda
+Fiat,Tipo
+Fiat,Punto
+Fiat,Bravo
+Fiat,Doblo
+Fiat,Multipla
+Maserati,Levante
+Maserati,Ghibli
+Maserati,Quattroporte
+Maserati,MC20
+Maserati,GranTurismo
+Maserati,Grecale
+Maserati,GranCabrio
+Maserati,MC12
+Maserati,Kubang
+Maserati,Alfieri
+Bentley,Continental GT
+Bentley,Bentayga
+Bentley,Flying Spur
+Bentley,Mulsanne
+Bentley,Bacalar
+Bentley,Azure
+Bentley,Arnage
+Bentley,Brooklands
+Bentley,Continental GTC
+Bentley,Bentayga EWB
+Ferrari,F8 Tributo
+Ferrari,Roma
+Ferrari,SF90 Stradale
+Ferrari,Portofino
+Ferrari,812 Superfast
+Ferrari,296 GTB
+Ferrari,Purosangue
+Ferrari,LaFerrari
+Ferrari,488 GTB
+Ferrari,458 Italia
+Lamborghini,Urus
+Lamborghini,Huracan
+Lamborghini,Aventador
+Lamborghini,Revuelto
+Lamborghini,Sian
+Lamborghini,Gallardo
+Lamborghini,Murcielago
+Lamborghini,Countach
+Lamborghini,Diablo
+Lamborghini,Veneno
+Rolls-Royce,Ghost
+Rolls-Royce,Phantom
+Rolls-Royce,Cullinan
+Rolls-Royce,Wraith
+Rolls-Royce,Dawn
+Rolls-Royce,Spectre
+Rolls-Royce,Silver Shadow
+Rolls-Royce,Silver Seraph
+Rolls-Royce,Corniche
+Rolls-Royce,Silver Spirit
+Aston Martin,DB11
+Aston Martin,Vantage
+Aston Martin,DBS
+Aston Martin,DBX
+Aston Martin,Valkyrie
+Aston Martin,Vanquish
+Aston Martin,Rapide
+Aston Martin,DB9
+Aston Martin,One-77
+Aston Martin,Vulcan
+Bugatti,Chiron
+Bugatti,Veyron
+Bugatti,Divo
+Bugatti,Centodieci
+Bugatti,La Voiture Noire
+Bugatti,Mistral
+Bugatti,Bolide
+Bugatti,Galibier
+Bugatti,EB110
+Bugatti,Chiron Super Sport
+McLaren,720S
+McLaren,Artura
+McLaren,765LT
+McLaren,GT
+McLaren,Elva
+McLaren,Senna
+McLaren,P1
+McLaren,570S
+McLaren,650S
+McLaren,MP4-12C
+Lotus,Emira
+Lotus,Evija
+Lotus,Eletre
+Lotus,Evora
+Lotus,Exige
+Lotus,Elise
+Lotus,Esprit
+Lotus,Europa
+Lotus,Elan
+Lotus,Carlton
+Rivian,R1T
+Rivian,R1S
+Rivian,R2T
+Rivian,R2S
+Rivian,R3T
+Rivian,R3S
+Rivian,R1X
+Rivian,R2X
+Rivian,R1V
+Rivian,R2V
+Lucid,Air
+Lucid,Gravity
+Lucid,Dream Edition
+Lucid,Pure
+Lucid,Touring
+Lucid,Grand Touring
+Lucid,Sapphire
+Lucid,Air EV
+Lucid,Project Gravity
+Lucid,Vision
+Fisker,Ocean
+Fisker,PEAR
+Fisker,Ronin
+Fisker,Karma
+Fisker,Alaska
+Fisker,Surf
+Fisker,Sunset
+Fisker,Emotion
+Fisker,EMotion
+Fisker,Orbit
+Polestar,2
+Polestar,3
+Polestar,4
+Polestar,5
+Polestar,1
+Polestar,6
+Polestar,7
+Polestar,O2
+Polestar,Precept
+Polestar,BST Edition 270
