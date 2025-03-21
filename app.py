@@ -245,5 +245,9 @@ def search_inventory():
     
     return render_template('search.html', results=results, search_performed=search_performed)
 
+@app.route('/login')
+def login():
+    return render_template('login.html') #somple login page
+
 if __name__ == '__main__':
     app.run(debug=True)
