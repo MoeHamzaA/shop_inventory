@@ -1,24 +1,37 @@
-# Automotive Inventory System
+# 🚗 Automotive Inventory System
+![Python](https://img.shields.io/badge/Python-3.6%2B-blue)
+![Flask](https://img.shields.io/badge/Flask-2.0+-green)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Status](https://img.shields.io/badge/status-active-brightgreen)
 
-A Flask-based web application with a clean, responsive UI for managing car inventory. This system allows dealerships to track their vehicle stock with ease.
 
-## Features
+A **Flask-based web application** for managing car dealership inventory with a clean and responsive UI.
 
-- **Dashboard View**: Easily visualize your entire inventory
-- **Add Vehicles**: 
-  - Add cars manually with complete details
-  - Add cars from a dealership database for quicker entry
-- **Remove Vehicles**: Remove specific quantities from inventory
-- **Search Functionality**: Search by company, model, year, or color
-- **Data Persistence**: All data is stored in CSV files for simplicity and portability
+## 📦 Features
 
-## Prerequisites
+- 📊 **Dashboard View** — Visualize your full car inventory
+- ➕ **Add Vehicles**
+  - Manually with complete details
+  - From a dealership database
+- ➖ **Remove Vehicles** — Decrease stock or remove entries
+- 🔍 **Search** — Filter by company, model, year, or color
+- 💾 **Data Persistence** — Uses CSV for simple data management
 
-- Python 3.6 or higher
+## 📸 UI Preview
+
+![Dashboard](screenshots/dashboard.png)
+![Home](screenshots/home.png)
+![Remove Menu](screenshots/removeMenu.png)
+
+## 🧰 Tech Stack
+
+- Python 3.6+
 - Flask
 - Pandas
+- HTML (Jinja2 Templates)
 
-## Installation
+## 🚀 Installation
+### 🔁 Clone the Repo
 
 1. Clone this repository or download the files
 ```bash
