@@ -17,11 +17,6 @@ A **Flask-based web application** for managing car dealership inventory with a c
 - 🔍 **Search** — Filter by company, model, year, or color
 - 💾 **Data Persistence** — Uses CSV for simple data management
 
-## 📸 UI Preview
-
-![Home](screenshots/home.png)
-![Remove Menu](screenshots/removeMenu.png)
-
 ## 🧰 Tech Stack
 
 - Python 3.6+
