@@ -2,7 +2,7 @@ import unittest
 import os
 import pandas as pd
 from unittest.mock import patch
-import app
+import backup_script.app as app
 
 class TestCarInventoryFull(unittest.TestCase):
     """
