@@ -19,7 +19,6 @@ A **Flask-based web application** for managing car dealership inventory with a c
 
 ## 📸 UI Preview
 
-![Dashboard](screenshots/dashboard.png)
 ![Home](screenshots/home.png)
 ![Remove Menu](screenshots/removeMenu.png)
 
