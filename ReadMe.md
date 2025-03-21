@@ -27,7 +27,7 @@ A **Flask-based web application** for managing car dealership inventory with a c
 - Python 3.6+
 - Flask
 - Pandas
-- HTML (Jinja2 Templates)
+- HTML
 
 ## 🚀 Installation
 ### 🔁 Clone the Repo
