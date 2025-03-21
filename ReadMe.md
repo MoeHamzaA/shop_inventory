@@ -34,32 +34,56 @@ pip install -r requirements.txt
 
 3. Ensure your file structure matches the following:
 ```
-car_inventory_web_app/
+shop_inventory/
 │
 ├── app.py                   # Main Flask application
+├── build.sh                 # Build script to set up the environment and run the app
 ├── inventory.csv            # Car inventory data
 ├── dealership.csv           # Dealership database
 │
-└── templates/               # HTML templates
-    ├── base.html            # Base template with layout and navigation
-    ├── index.html           # Homepage with inventory table
-    ├── add_manually.html    # Form to add cars manually
-    ├── add_from_database.html  # Form to add cars from dealership DB
-    ├── remove.html          # Interface to remove cars from inventory
-    └── search.html          # Search interface
+└── templates/                   # HTML templates
+    ├── base.html                # Base template with layout and navigation
+    ├── index.html               # Homepage with inventory table
+    ├── add_manually.html        # Form to add cars manually
+    ├── add_from_database.html   # Form to add cars from dealership DB
+    ├── remove.html              # Interface to remove cars from inventory
+    └── search.html              # Search interface
 ```
 
 ## Running the Application
-
-Run the application with:
+You can set up the application manually or use the build script to automate the process.
+## Option 1: Manually
+- Set up the environment by running:
+```bash
+python3 -m venv venv  # Create a virtual environment
+source venv/bin/activate  # Activate the virtual environment (Linux/macOS)
+```
+- Install the required dependencies:
+```bash
+pip install -r requirements.txt
+```
+- Run the application:
 ```bash
 python app.py
 ```
-
-Then open your web browser and navigate to:
+- Then open your web browser and navigate to:
 ```
 http://127.0.0.1:5000/
 ```
+## Option 2: Using the Build Script (build.sh)
+To automate the setup process, you can run the build script:
+- Make the build.sh file executable:
+```bash
+chmod +x build.sh
+```
+- Run the script:
+```bash
+./build.sh
+``` 
+This script will:
+- Create a virtual environment
+- Install dependencies from requirements.txt
+- Run the Flask application
 
 ## Usage
 
@@ -86,9 +110,4 @@ Contains available makes and models with columns:
 - Company
 - Model
 
-## Customization
 
-You can easily customize the application by:
-- Modifying the templates to change the UI
-- Adding new fields to the inventory structure
-- Extending functionality with additional features
