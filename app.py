@@ -7,7 +7,6 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = 'car_inventory_secret_key'
 
-# Email configuration
 app.config['MAIL_SERVER'] = 'smtp.office365.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -302,11 +301,6 @@ def search_inventory():
     
     return render_template('search.html', results=results, search_performed=search_performed)
 
-<<<<<<< HEAD
-@app.route('/login')
-def login():
-    return render_template('login.html') #somple login page
-=======
 @app.route('/edit/<int:car_id>', methods=['GET', 'POST'])
 @login_required
 def edit_car(car_id):
@@ -457,7 +451,6 @@ def download_inventory():
                 os.remove(filename)
         except:
             pass  # Ignore cleanup errors
->>>>>>> origin/main
 
 if __name__ == '__main__':
     app.run(debug=True)
