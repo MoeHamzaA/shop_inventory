@@ -86,7 +86,9 @@ chmod +x build.sh
 - Run the script:
 ```bash
 ./build.sh
-``` 
+```
+or run the build.sh1
+
 This script will:
 - Create a virtual environment
 - Install dependencies from requirements.txt
