@@ -34,6 +34,7 @@
                             <td>{{ car.Colour }}</td>
                             <td>{{ car.Quantity }}</td>
                             <td>
+                                <a href="{{ url_for('edit_car', car_id=car.ID) }}" class="btn btn-warning btn-sm">Edit</a>
                                 <a href="{{ url_for('remove_inventory') }}?id={{ car.ID }}" class="btn btn-sm btn-outline-danger">
                                     <i class="fas fa-trash btn-icon"></i>Remove
                                 </a>
