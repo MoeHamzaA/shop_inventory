@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <h2>Search Inventory</h2>
+        <form method="POST" class="mt-4">
+            <div class="mb-3">
+                <label for="search_type" class="form-label">Search By</label>
+                <select class="form-select" id="search_type" name="search_type" required>
+                    <option value="company">Company</option>
+                    <option value="model">Model</option>
+                    <option value="year">Year</option>
+                    <option value="colour">Color</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="search_term" class="form-label">Search Term</label>
+                <input type="text" class="form-control" id="search_term" name="search_term" required>
+            </div>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search btn-icon"></i>Search
+                </button>
+                <a href="{{ url_for('inventory.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-times btn-icon"></i>Cancel
+                </a>
+            </div>
+        </form>
+
+        {% if search_performed %}
+        <div class="mt-4">
+            <h3>Search Results</h3>
+            {% if results.empty %}
+            <div class="alert alert-info">
+                No cars found matching your search criteria.
+            </div>
+            {% else %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Company</th>
+                            <th>Model</th>
+                            <th>Year</th>
+                            <th>Color</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for _, car in results.iterrows() %}
+                        <tr>
+                            <td>{{ car.id }}</td>
+                            <td>{{ car.company }}</td>
+                            <td>{{ car.model }}</td>
+                            <td>{{ car.year }}</td>
+                            <td>{{ car.colour }}</td>
+                            <td>{{ car.quantity }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

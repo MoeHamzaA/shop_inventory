@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <h2>Add Car from Database</h2>
+        <form method="POST" class="mt-4">
+            <div class="mb-3">
+                <label for="company" class="form-label">Company</label>
+                <select class="form-select" id="company" name="company" required>
+                    <option value="">Select a company</option>
+                    {% for company in companies %}
+                    <option value="{{ company }}" {% if selected_company == company %}selected{% endif %}>{{ company }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="model" class="form-label">Model</label>
+                <select class="form-select" id="model" name="model" required {% if not models %}disabled{% endif %}>
+                    <option value="">Select a model</option>
+                    {% if models %}
+                    {% for model in models %}
+                    <option value="{{ model }}">{{ model }}</option>
+                    {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="year" class="form-label">Year</label>
+                <input type="text" class="form-control" id="year" name="year" required pattern="[0-9]{4}" placeholder="Enter 4-digit year">
+            </div>
+            <div class="mb-3">
+                <label for="colour" class="form-label">Color</label>
+                <input type="text" class="form-control" id="colour" name="colour" required>
+            </div>
+            <div class="mb-3">
+                <label for="quantity" class="form-label">Quantity</label>
+                <input type="number" class="form-control" id="quantity" name="quantity" required min="1">
+            </div>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus btn-icon"></i>Add Car
+                </button>
+                <a href="{{ url_for('inventory.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-times btn-icon"></i>Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.getElementById('company').addEventListener('change', function() {
+    const company = this.value;
+    const modelSelect = document.getElementById('model');
+    
+    if (!company) {
+        modelSelect.innerHTML = '<option value="">Select a model</option>';
+        modelSelect.disabled = true;
+        return;
+    }
+
+    // Send request to get models for selected company
+    fetch(`/get_models/${company}`)
+        .then(response => response.json())
+        .then(data => {
+            modelSelect.innerHTML = '<option value="">Select a model</option>';
+            data.models.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model;
+                option.textContent = model;
+                modelSelect.appendChild(option);
+            });
+            modelSelect.disabled = false;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            modelSelect.innerHTML = '<option value="">Error loading models</option>';
+            modelSelect.disabled = true;
+        });
+});
+</script>
+{% endblock %}

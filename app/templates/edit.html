@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Car - Car Inventory System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <h2>Edit Car</h2>
+        <form method="POST" class="mt-4">
+            <input type="hidden" name="version" value="{{ car.version }}">
+            <div class="mb-3">
+                <label for="company" class="form-label">Company</label>
+                <input type="text" class="form-control" id="company" name="company" value="{{ car.company }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="model" class="form-label">Model</label>
+                <input type="text" class="form-control" id="model" name="model" value="{{ car.model }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="year" class="form-label">Year</label>
+                <input type="text" class="form-control" id="year" name="year" value="{{ car.year }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="colour" class="form-label">Color</label>
+                <input type="text" class="form-control" id="colour" name="colour" value="{{ car.colour }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="quantity" class="form-label">Quantity</label>
+                <input type="number" class="form-control" id="quantity" name="quantity" value="{{ car.quantity }}" required min="0">
+            </div>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save btn-icon"></i>Save Changes
+                </button>
+                <a href="{{ url_for('inventory.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-times btn-icon"></i>Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

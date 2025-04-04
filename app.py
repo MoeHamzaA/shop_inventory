@@ -3,6 +3,8 @@ import pandas as pd
 import os
 from flask_mail import Mail, Message
 from datetime import datetime
+import sqlite3
+from contextlib import contextmanager
 
 app = Flask(__name__)
 app.secret_key = 'car_inventory_secret_key'
@@ -20,9 +22,121 @@ app.config['MAIL_MAX_EMAILS'] = None
 app.config['MAIL_ASCII_ATTACHMENTS'] = False
 mail = Mail(app)
 
-# File paths
-inventory_file = "inventory.csv"
-database_file = "dealership.csv"
+# Database configuration
+DATABASE = 'inventory.db'
+
+def init_db():
+    """Initialize the database with required tables"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        
+        # Create inventory table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS inventory (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                company TEXT NOT NULL,
+                model TEXT NOT NULL,
+                year TEXT NOT NULL,
+                colour TEXT NOT NULL,
+                quantity INTEGER NOT NULL,
+                version INTEGER DEFAULT 1,
+                UNIQUE(company, model, year, colour)
+            )
+        ''')
+        
+        # Create dealership table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS dealership (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                company TEXT NOT NULL,
+                model TEXT NOT NULL,
+                UNIQUE(company, model)
+            )
+        ''')
+        
+        # Initialize dealership data if table is empty
+        cursor.execute("SELECT COUNT(*) FROM dealership")
+        if cursor.fetchone()[0] == 0:
+            sample_data = [
+                ('Toyota', 'Camry'),
+                ('Toyota', 'Corolla'),
+                ('Toyota', 'RAV4'),
+                ('Honda', 'Civic'),
+                ('Honda', 'Accord'),
+                ('Honda', 'CR-V'),
+                ('Ford', 'F-150'),
+                ('Ford', 'Mustang'),
+                ('Ford', 'Escape'),
+                ('Chevrolet', 'Silverado'),
+                ('Chevrolet', 'Malibu'),
+                ('Chevrolet', 'Equinox')
+            ]
+            cursor.executemany('INSERT INTO dealership (company, model) VALUES (?, ?)', sample_data)
+        
+        conn.commit()
+
+@contextmanager
+def get_db():
+    """Get a database connection with proper transaction handling"""
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+def load_inventory():
+    """Load inventory from database"""
+    with get_db() as conn:
+        df = pd.read_sql_query("SELECT * FROM inventory", conn)
+        if df.empty:
+            return pd.DataFrame(columns=["id", "company", "model", "year", "colour", "quantity", "version"])
+        return df
+
+def save_inventory(df):
+    """Save inventory to database"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        
+        # Clear existing data
+        cursor.execute("DELETE FROM inventory")
+        
+        # Insert new data
+        for _, row in df.iterrows():
+            cursor.execute('''
+                INSERT INTO inventory (company, model, year, colour, quantity, version)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (row['company'], row['model'], row['year'], row['colour'], row['quantity'], row['version']))
+        
+        conn.commit()
+
+def load_dealership():
+    """Load dealership database"""
+    with get_db() as conn:
+        df = pd.read_sql_query("SELECT * FROM dealership", conn)
+        if df.empty:
+            return pd.DataFrame(columns=["company", "model"])
+        return df
+
+def save_dealership(df):
+    """Save dealership database"""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        
+        # Clear existing data
+        cursor.execute("DELETE FROM dealership")
+        
+        # Insert new data
+        for _, row in df.iterrows():
+            cursor.execute('''
+                INSERT INTO dealership (company, model)
+                VALUES (?, ?)
+            ''', (row['company'], row['model']))
+        
+        conn.commit()
+
+# Initialize database on startup
+init_db()
 
 # Login credentials
 ADMIN_USERNAME = "admin"
@@ -61,32 +175,6 @@ def logout():
     flash('You have been logged out', 'info')
     return redirect(url_for('login'))
 
-def load_inventory():
-    """Load inventory from CSV file or create empty DataFrame if file doesn't exist"""
-    try:
-        df = pd.read_csv(inventory_file)
-        if df.empty:
-            return pd.DataFrame(columns=["ID", "Company", "Model", "Year", "Colour", "Quantity"])
-        # Ensure ID column exists
-        if "ID" not in df.columns:
-            df["ID"] = range(1, len(df) + 1)
-        return df
-    except (FileNotFoundError, pd.errors.EmptyDataError):
-        return pd.DataFrame(columns=["ID", "Company", "Model", "Year", "Colour", "Quantity"])
-
-def save_inventory(df):
-    """Save inventory DataFrame to CSV file"""
-    # Ensure IDs are sequential
-    df["ID"] = range(1, len(df) + 1)
-    df.to_csv(inventory_file, index=False)
-
-def load_dealership():
-    """Load dealership database from CSV file"""
-    try:
-        return pd.read_csv(database_file)
-    except (FileNotFoundError, pd.errors.EmptyDataError):
-        return pd.DataFrame(columns=["Company", "Model"])
-
 @app.route('/')
 @login_required
 def index():
@@ -121,27 +209,27 @@ def add_manually():
         df = load_inventory()
         
         # Check if identical car already exists in inventory - case insensitive comparison
-        mask = (df["Company"].str.lower() == company.lower()) & \
-               (df["Model"].str.lower() == model.lower()) & \
-               (df["Year"] == year) & \
-               (df["Colour"].str.lower() == colour.lower())
+        mask = (df["company"].str.lower() == company.lower()) & \
+               (df["model"].str.lower() == model.lower()) & \
+               (df["year"] == year) & \
+               (df["colour"].str.lower() == colour.lower())
         
         if any(mask):
             # Car exists, increment quantity
             idx = df.loc[mask].index[0]
-            current_qty = df.loc[idx, "Quantity"]
-            df.loc[idx, "Quantity"] = current_qty + quantity
-            car_id = df.loc[idx, "ID"]
-            flash(f'Added {quantity} to existing inventory (ID: {car_id}). Total quantity now: {df.loc[idx, "Quantity"]}', 'success')
+            current_qty = df.loc[idx, "quantity"]
+            df.loc[idx, "quantity"] = current_qty + quantity
+            car_id = df.loc[idx, "id"]
+            flash(f'Added {quantity} to existing inventory (ID: {car_id}). Total quantity now: {df.loc[idx, "quantity"]}', 'success')
         else:
             # Add new car
             new_row = pd.DataFrame([{
-                "ID": len(df) + 1,
-                "Company": company,
-                "Model": model,
-                "Year": year,
-                "Colour": colour,
-                "Quantity": quantity
+                "id": len(df) + 1,
+                "company": company,
+                "model": model,
+                "year": year,
+                "colour": colour,
+                "quantity": quantity
             }])
             df = pd.concat([df, new_row], ignore_index=True)
             flash(f'Added new car to inventory (ID: {len(df)})', 'success')
@@ -161,7 +249,7 @@ def add_from_database():
         flash('Dealership database not found or empty', 'danger')
         return redirect(url_for('index'))
     
-    companies = sorted(dealership_db["Company"].unique())
+    companies = sorted(dealership_db["company"].unique())
     
     if request.method == 'POST':
         selected_company = request.form['company']
@@ -169,8 +257,8 @@ def add_from_database():
         # For the initial company selection form
         if 'action' in request.form and request.form['action'] == 'select_company':
             # Filter models by selected company
-            filtered_db = dealership_db[dealership_db["Company"].str.lower() == selected_company.lower()]
-            models = sorted(filtered_db["Model"].unique())
+            filtered_db = dealership_db[dealership_db["company"].str.lower() == selected_company.lower()]
+            models = sorted(filtered_db["model"].unique())
             return render_template('add_from_database.html', 
                                   companies=companies, 
                                   selected_company=selected_company, 
@@ -193,8 +281,8 @@ def add_from_database():
         # Validate year input
         if not (year.isdigit() and len(year) == 4):
             flash('Invalid year format. Please enter a 4-digit year', 'danger')
-            filtered_db = dealership_db[dealership_db["Company"].str.lower() == selected_company.lower()]
-            models = sorted(filtered_db["Model"].unique())
+            filtered_db = dealership_db[dealership_db["company"].str.lower() == selected_company.lower()]
+            models = sorted(filtered_db["model"].unique())
             return render_template('add_from_database.html', 
                                   companies=companies, 
                                   selected_company=selected_company, 
@@ -203,27 +291,27 @@ def add_from_database():
         df = load_inventory()
         
         # Check if identical car already exists in inventory
-        mask = (df["Company"].str.lower() == selected_company.lower()) & \
-               (df["Model"].str.lower() == selected_model.lower()) & \
-               (df["Year"] == year) & \
-               (df["Colour"].str.lower() == colour.lower())
+        mask = (df["company"].str.lower() == selected_company.lower()) & \
+               (df["model"].str.lower() == selected_model.lower()) & \
+               (df["year"] == year) & \
+               (df["colour"].str.lower() == colour.lower())
         
         if any(mask):
             # Car exists, increment quantity
             idx = df.loc[mask].index[0]
-            current_qty = df.loc[idx, "Quantity"]
-            df.loc[idx, "Quantity"] = current_qty + quantity
-            car_id = df.loc[idx, "ID"]
-            flash(f'Added {quantity} to existing inventory (ID: {car_id}). Total quantity now: {df.loc[idx, "Quantity"]}', 'success')
+            current_qty = df.loc[idx, "quantity"]
+            df.loc[idx, "quantity"] = current_qty + quantity
+            car_id = df.loc[idx, "id"]
+            flash(f'Added {quantity} to existing inventory (ID: {car_id}). Total quantity now: {df.loc[idx, "quantity"]}', 'success')
         else:
             # Add new car
             new_row = pd.DataFrame([{
-                "ID": len(df) + 1,
-                "Company": selected_company,
-                "Model": selected_model,
-                "Year": year,
-                "Colour": colour,
-                "Quantity": quantity
+                "id": len(df) + 1,
+                "company": selected_company,
+                "model": selected_model,
+                "year": year,
+                "colour": colour,
+                "quantity": quantity
             }])
             df = pd.concat([df, new_row], ignore_index=True)
             flash(f'Added new car to inventory (ID: {len(df)})', 'success')
@@ -248,14 +336,14 @@ def remove_inventory():
         quantity_to_remove = int(request.form['quantity'])
         
         # Find the car
-        mask = inventory["ID"] == car_id
+        mask = inventory["id"] == car_id
         if not any(mask):
             flash('Car ID not found in inventory', 'danger')
             return redirect(url_for('remove_inventory'))
             
         car_idx = inventory.loc[mask].index[0]
         car_info = inventory.loc[car_idx]
-        current_quantity = car_info["Quantity"]
+        current_quantity = car_info["quantity"]
         
         if quantity_to_remove > current_quantity:
             flash('Cannot remove more than available quantity', 'danger')
@@ -264,10 +352,10 @@ def remove_inventory():
         # Remove cars
         if quantity_to_remove >= current_quantity:
             inventory = inventory[~mask]
-            flash(f'Removed all {car_info["Company"]} {car_info["Model"]} (ID: {car_id}) from inventory', 'success')
+            flash(f'Removed all {car_info["company"]} {car_info["model"]} (ID: {car_id}) from inventory', 'success')
         else:
-            inventory.loc[car_idx, "Quantity"] -= quantity_to_remove
-            flash(f'Removed {quantity_to_remove} {car_info["Company"]} {car_info["Model"]} from inventory. Remaining: {inventory.loc[car_idx, "Quantity"]}', 'success')
+            inventory.loc[car_idx, "quantity"] -= quantity_to_remove
+            flash(f'Removed {quantity_to_remove} {car_info["company"]} {car_info["model"]} from inventory. Remaining: {inventory.loc[car_idx, "quantity"]}', 'success')
         
         save_inventory(inventory)
         return redirect(url_for('index'))
@@ -292,13 +380,13 @@ def search_inventory():
         search_performed = True
         
         if search_type == 'company':
-            results = inventory[inventory["Company"].str.lower().str.contains(search_term)]
+            results = inventory[inventory["company"].str.lower().str.contains(search_term)]
         elif search_type == 'model':
-            results = inventory[inventory["Model"].str.lower().str.contains(search_term)]
+            results = inventory[inventory["model"].str.lower().str.contains(search_term)]
         elif search_type == 'year':
-            results = inventory[inventory["Year"].astype(str) == search_term]
+            results = inventory[inventory["year"].astype(str) == search_term]
         elif search_type == 'colour':
-            results = inventory[inventory["Colour"].str.lower().str.contains(search_term)]
+            results = inventory[inventory["colour"].str.lower().str.contains(search_term)]
     
     return render_template('search.html', results=results, search_performed=search_performed)
 
@@ -309,7 +397,7 @@ def edit_car(car_id):
     inventory = load_inventory()
     
     # Find the car
-    mask = inventory["ID"] == car_id
+    mask = inventory["id"] == car_id
     if not any(mask):
         flash('Car ID not found in inventory', 'danger')
         return redirect(url_for('index'))
@@ -317,6 +405,15 @@ def edit_car(car_id):
     car = inventory.loc[mask].iloc[0]
     
     if request.method == 'POST':
+        # Get the version number from the form
+        submitted_version = int(request.form.get('version', 0))
+        current_version = car["version"]
+        
+        # Check for concurrent modifications
+        if submitted_version != current_version:
+            flash('This car was modified by another user while you were editing. Please review the changes and try again.', 'danger')
+            return redirect(url_for('edit_car', car_id=car_id))
+        
         year = request.form['year'].strip()
         colour = request.form['colour'].strip().title()
         
@@ -336,9 +433,10 @@ def edit_car(car_id):
         
         # Update the car details
         car_idx = inventory.loc[mask].index[0]
-        inventory.loc[car_idx, "Year"] = year
-        inventory.loc[car_idx, "Colour"] = colour
-        inventory.loc[car_idx, "Quantity"] = quantity
+        inventory.loc[car_idx, "year"] = year
+        inventory.loc[car_idx, "colour"] = colour
+        inventory.loc[car_idx, "quantity"] = quantity
+        inventory.loc[car_idx, "version"] = current_version + 1
         
         save_inventory(inventory)
         flash('Car details updated successfully', 'success')
@@ -380,8 +478,8 @@ def email_inventory():
                 <div class="summary">
                     <h3>Summary</h3>
                     <p>Total Cars: {len(inventory)}</p>
-                    <p>Total Quantity: {inventory['Quantity'].sum()}</p>
-                    <p>Unique Companies: {inventory['Company'].nunique()}</p>
+                    <p>Total Quantity: {inventory['quantity'].sum()}</p>
+                    <p>Unique Companies: {inventory['company'].nunique()}</p>
                 </div>
                 
                 <h3>Detailed Inventory</h3>
