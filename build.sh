@@ -1,27 +1,72 @@
 #!/bin/bash
 
-# Update and install system dependencies (if needed)
-echo "Installing system dependencies..."
-sudo apt-get update
-sudo apt-get install -y python3-pip python3-venv
+echo "Setting up virtual environment..."
 
-# Create a virtual environment
-echo "Creating virtual environment..."
-python3 -m venv venv
+# Step 1: Check and create venv if it doesn't exist
+if [ ! -d "venv" ]; then
+    echo "Creating virtual environment..."
+    python -m venv venv
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to create virtual environment" >&2
+        exit 1
+    fi
+fi
 
-# Activate the virtual environment
+# Step 2: Activate the virtual environment
 echo "Activating virtual environment..."
-source venv/bin/activate
+if [ -f "venv/Scripts/activate" ]; then
+    # Windows Git Bash
+    source venv/Scripts/activate
+elif [ -f "venv/bin/activate" ]; then
+    # Unix/Linux
+    source venv/bin/activate
+else
+    echo "Error: Could not find virtual environment activation script" >&2
+    echo "Expected paths:" >&2
+    echo "  - venv/Scripts/activate (Windows)" >&2
+    echo "  - venv/bin/activate (Unix/Linux)" >&2
+    exit 1
+fi
 
-# Install dependencies from requirements.txt
-echo "Installing Python dependencies..."
-pip install -r requirements.txt
+if [ $? -ne 0 ]; then
+    echo "Error: Could not activate virtual environment" >&2
+    exit 1
+fi
 
-# Set environment variables (for Flask app)
+# Step 3: Upgrade pip, setuptools, wheel
+echo "Upgrading pip, setuptools, wheel..."
+python -m pip install --upgrade pip setuptools wheel
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to upgrade pip, setuptools, wheel" >&2
+    exit 1
+fi
+
+# Step 4: Install dependencies
+echo "Installing dependencies from requirements.txt..."
+python -m pip install -r requirements.txt
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to install dependencies" >&2
+    exit 1
+fi
+
+# Step 5: Verify Flask installation
+echo "Verifying Flask installation..."
+python -c "import flask"
+if [ $? -ne 0 ]; then
+    echo "Error: Flask is not installed correctly" >&2
+    exit 1
+fi
+echo "Flask installation verified successfully"
+
+# Step 6: Set environment variables
 echo "Setting Flask environment variables..."
-export FLASK_APP=app.py
-export FLASK_ENV=development
+export FLASK_APP="app.py"
+export FLASK_ENV="development"
 
-# Run the Flask application
+# Step 7: Run the Flask application
 echo "Starting Flask application..."
-flask run
+python -m flask run
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to start Flask application" >&2
+    exit 1
+fi

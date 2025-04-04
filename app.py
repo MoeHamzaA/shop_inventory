@@ -3,6 +3,7 @@ import pandas as pd
 import os
 from flask_mail import Mail, Message
 from datetime import datetime
+import portalocker
 
 app = Flask(__name__)
 app.secret_key = 'car_inventory_secret_key'
@@ -22,10 +23,28 @@ mail = Mail(app)
 # File paths
 inventory_file = "inventory.csv"
 database_file = "dealership.csv"
+lock_file = "inventory.lock"
 
 # Login credentials
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "admin123"
+
+def acquire_lock():
+    """Acquire a file lock to prevent concurrent writes"""
+    lock = open(lock_file, 'w')
+    try:
+        portalocker.lock(lock, portalocker.LOCK_EX)
+        return lock
+    except:
+        lock.close()
+        raise
+
+def release_lock(lock):
+    """Release the file lock"""
+    try:
+        portalocker.unlock(lock)
+    finally:
+        lock.close()
 
 def login_required(f):
     """Decorator to require login for routes"""
@@ -65,19 +84,27 @@ def load_inventory():
     try:
         df = pd.read_csv(inventory_file)
         if df.empty:
-            return pd.DataFrame(columns=["ID", "Company", "Model", "Year", "Colour", "Quantity"])
-        # Ensure ID column exists
+            return pd.DataFrame(columns=["ID", "Company", "Model", "Year", "Colour", "Quantity", "Version"])
+        # Ensure ID and Version columns exist
         if "ID" not in df.columns:
             df["ID"] = range(1, len(df) + 1)
+        if "Version" not in df.columns:
+            df["Version"] = 1
         return df
     except (FileNotFoundError, pd.errors.EmptyDataError):
-        return pd.DataFrame(columns=["ID", "Company", "Model", "Year", "Colour", "Quantity"])
+        return pd.DataFrame(columns=["ID", "Company", "Model", "Year", "Colour", "Quantity", "Version"])
 
 def save_inventory(df):
-    """Save inventory DataFrame to CSV file"""
-    # Ensure IDs are sequential
-    df["ID"] = range(1, len(df) + 1)
-    df.to_csv(inventory_file, index=False)
+    """Save inventory DataFrame to CSV file with locking"""
+    lock = acquire_lock()
+    try:
+        # Ensure IDs and Versions are sequential
+        df["ID"] = range(1, len(df) + 1)
+        if "Version" not in df.columns:
+            df["Version"] = 1
+        df.to_csv(inventory_file, index=False)
+    finally:
+        release_lock(lock)
 
 def load_dealership():
     """Load dealership database from CSV file"""
@@ -316,6 +343,15 @@ def edit_car(car_id):
     car = inventory.loc[mask].iloc[0]
     
     if request.method == 'POST':
+        # Get the version number from the form
+        submitted_version = int(request.form.get('version', 0))
+        current_version = car["Version"]
+        
+        # Check for concurrent modifications
+        if submitted_version != current_version:
+            flash('This car was modified by another user while you were editing. Please review the changes and try again.', 'danger')
+            return redirect(url_for('edit_car', car_id=car_id))
+        
         year = request.form['year'].strip()
         colour = request.form['colour'].strip().title()
         
@@ -338,6 +374,7 @@ def edit_car(car_id):
         inventory.loc[car_idx, "Year"] = year
         inventory.loc[car_idx, "Colour"] = colour
         inventory.loc[car_idx, "Quantity"] = quantity
+        inventory.loc[car_idx, "Version"] = current_version + 1
         
         save_inventory(inventory)
         flash('Car details updated successfully', 'success')
