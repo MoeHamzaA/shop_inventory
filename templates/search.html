@@ -7,19 +7,47 @@
     </div>
     <div class="card-body">
         <form method="POST" action="{{ url_for('search_inventory') }}">
+            <!-- Filters Section -->
             <div class="row mb-3">
-                <div class="col-md-4">
-                    <label for="search_type" class="form-label">Search By</label>
-                    <select class="form-select" id="search_type" name="search_type" required>
-                        <option value="company">Company</option>
-                        <option value="model">Model</option>
-                        <option value="year">Year</option>
-                        <option value="colour">Colour</option>
+                <h5>Filters</h5>
+                <div class="col-md-3">
+                    <label for="company_filter" class="form-label">Company</label>
+                    <select class="form-select" id="company_filter" name="company_filter">
+                        <option value="">Any</option>
+                        {% for company in companies %}
+                        <option value="{{ company }}" {% if company_filter == company %}selected{% endif %}>{{ company }}</option>
+                        {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-3">
+                    <label for="year_filter" class="form-label">Year</label>
+                    <select class="form-select" id="year_filter" name="year_filter">
+                        <option value="">Any</option>
+                        {% for year in years %}
+                        <option value="{{ year }}" {% if year_filter == year %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="colour_filter" class="form-label">Colour</label>
+                    <select class="form-select" id="colour_filter" name="colour_filter">
+                        <option value="">Any</option>
+                        {% for colour in colours %}
+                        <option value="{{ colour }}" {% if colour_filter == colour %}selected{% endif %}>{{ colour }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Search Section -->
+            <div class="row mb-3">
+                <h5>Search</h5>
+                <div class="col-md-12">
                     <label for="search_term" class="form-label">Search Term</label>
-                    <input type="text" class="form-control" id="search_term" name="search_term" required>
+                    <input type="text" class="form-control" id="search_term" name="search_term" 
+                           value="{{ search_term if search_term }}" 
+                           placeholder="Search across all fields...">
+                    <div class="form-text">Search will look in Company, Model, and Colour fields</div>
                 </div>
             </div>
             
