@@ -1,51 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
-import pandas as pd
 import os
-from flask_mail import Mail, Message
-from datetime import datetime
-import portalocker
+import pandas as pd
+from helpers import (
+    load_inventory, save_inventory, load_dealership,
+    generate_inventory_filename, cleanup_file
+)
 
 app = Flask(__name__)
 app.secret_key = 'car_inventory_secret_key'
 
-# Email configuration
-app.config['MAIL_SERVER'] = 'smtp.office365.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USER', 'invevmomentum@outlook.com')
-app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASSWORD', 'momentum123')
-app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('EMAIL_USER', 'invevmomentum@outlook.com')
-app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_MAX_EMAILS'] = None
-app.config['MAIL_ASCII_ATTACHMENTS'] = False
-mail = Mail(app)
-
-# File paths
-inventory_file = "inventory.csv"
-database_file = "dealership.csv"
-lock_file = "inventory.lock"
-
 # Login credentials
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "admin123"
-
-def acquire_lock():
-    """Acquire a file lock to prevent concurrent writes"""
-    lock = open(lock_file, 'w')
-    try:
-        portalocker.lock(lock, portalocker.LOCK_EX)
-        return lock
-    except:
-        lock.close()
-        raise
-
-def release_lock(lock):
-    """Release the file lock"""
-    try:
-        portalocker.unlock(lock)
-    finally:
-        lock.close()
 
 def login_required(f):
     """Decorator to require login for routes"""
@@ -79,40 +45,6 @@ def logout():
     session.pop('logged_in', None)
     flash('You have been logged out', 'info')
     return redirect(url_for('login'))
-
-def load_inventory():
-    """Load inventory from CSV file or create empty DataFrame if file doesn't exist"""
-    try:
-        df = pd.read_csv(inventory_file)
-        if df.empty:
-            return pd.DataFrame(columns=["ID", "Company", "Model", "Year", "Colour", "Quantity", "Version"])
-        # Ensure ID and Version columns exist
-        if "ID" not in df.columns:
-            df["ID"] = range(1, len(df) + 1)
-        if "Version" not in df.columns:
-            df["Version"] = 1
-        return df
-    except (FileNotFoundError, pd.errors.EmptyDataError):
-        return pd.DataFrame(columns=["ID", "Company", "Model", "Year", "Colour", "Quantity", "Version"])
-
-def save_inventory(df):
-    """Save inventory DataFrame to CSV file with locking"""
-    lock = acquire_lock()
-    try:
-        # Ensure IDs and Versions are sequential
-        df["ID"] = range(1, len(df) + 1)
-        if "Version" not in df.columns:
-            df["Version"] = 1
-        df.to_csv(inventory_file, index=False)
-    finally:
-        release_lock(lock)
-
-def load_dealership():
-    """Load dealership database from CSV file"""
-    try:
-        return pd.read_csv(database_file)
-    except (FileNotFoundError, pd.errors.EmptyDataError):
-        return pd.DataFrame(columns=["Company", "Model"])
 
 @app.route('/')
 @login_required
@@ -421,87 +353,12 @@ def edit_car(car_id):
     
     return render_template('edit.html', car=car)
 
-@app.route('/email_inventory', methods=['GET', 'POST'])
-@login_required
-def email_inventory():
-    """Send inventory details via email"""
-    inventory = load_inventory()
-    
-    if request.method == 'POST':
-        recipient_email = request.form.get('recipient_email')
-        subject = request.form.get('subject', 'Car Inventory Report')
-        message = request.form.get('message', '')
-        
-        if not recipient_email:
-            flash('Please enter a recipient email address', 'danger')
-            return render_template('email.html', inventory=inventory)
-        
-        try:
-            # Create email body
-            email_body = f"""
-            <html>
-            <head>
-                <style>
-                    table {{ border-collapse: collapse; width: 100%; }}
-                    th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
-                    th {{ background-color: #f2f2f2; }}
-                    .summary {{ margin-bottom: 20px; }}
-                </style>
-            </head>
-            <body>
-                <h2>Car Inventory Report</h2>
-                <p>Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
-                
-                <div class="summary">
-                    <h3>Summary</h3>
-                    <p>Total Cars: {len(inventory)}</p>
-                    <p>Total Quantity: {inventory['Quantity'].sum()}</p>
-                    <p>Unique Companies: {inventory['Company'].nunique()}</p>
-                </div>
-                
-                <h3>Detailed Inventory</h3>
-                <table>
-                    <tr>
-                        <th>ID</th>
-                        <th>Company</th>
-                        <th>Model</th>
-                        <th>Year</th>
-                        <th>Colour</th>
-                        <th>Quantity</th>
-                    </tr>
-                    {inventory.to_html(index=False, classes='table table-striped')}
-                </table>
-                
-                {f'<p>{message}</p>' if message else ''}
-            </body>
-            </html>
-            """
-            
-            # Create and send email
-            msg = Message(
-                subject=subject,
-                recipients=[recipient_email],
-                html=email_body
-            )
-            
-            mail.send(msg)
-            flash('Inventory report sent successfully!', 'success')
-            return redirect(url_for('index'))
-            
-        except Exception as e:
-            flash(f'Error sending email: {str(e)}', 'danger')
-            return render_template('email.html', inventory=inventory)
-    
-    return render_template('email.html', inventory=inventory)
-
 @app.route('/download_inventory')
 @login_required
 def download_inventory():
     """Download inventory as CSV file"""
     try:
-        # Generate filename with timestamp
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f'car_inventory_{timestamp}.csv'
+        filename = generate_inventory_filename()
         
         # Create a copy of the inventory file with timestamp
         inventory = load_inventory()
@@ -519,14 +376,7 @@ def download_inventory():
         flash(f'Error downloading inventory: {str(e)}', 'danger')
         return redirect(url_for('index'))
     finally:
-        # Try to delete the file after a short delay
-        try:
-            import time
-            time.sleep(1)  # Wait for file to be sent
-            if os.path.exists(filename):
-                os.remove(filename)
-        except:
-            pass  # Ignore cleanup errors
+        cleanup_file(filename)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
