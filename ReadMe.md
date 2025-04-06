@@ -5,24 +5,46 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Status](https://img.shields.io/badge/status-active-brightgreen)
 
-A **Flask-based web application** for managing car dealership inventory with a clean and responsive UI.
+A comprehensive **Flask-based web application** for managing car dealership inventory with a clean and responsive UI. Designed for dealerships to track, manage, and report on their vehicle stock efficiently.
 
 ## 📦 Features
 
-- 📊 **Dashboard View** — Visualize your full car inventory
-- ➕ **Add Vehicles**
-  - Manually with complete details
-  - From a dealership database
-- ➖ **Remove Vehicles** — Decrease stock or remove entries
-- 🔍 **Search** — Filter by company, model, year, or color
-- 💾 **Data Persistence** — Uses CSV for simple data management
+- 🔒 **User Authentication**
+  - Secure login system for admins
+  - Session management
+  - Protected routes
+
+- 📊 **Dashboard View** 
+  - Complete overview of your vehicle inventory
+  - At-a-glance stock information
+
+- ➕ **Vehicle Management**
+  - Add vehicles manually with detailed information
+  - Add from existing dealership database
+  - Edit vehicle details with version control
+  - Remove vehicles (partial or complete)
+
+- 🔍 **Advanced Search & Filtering**
+  - Multi-criteria filtering (Company, Year, Colour)
+  - Full-text search across multiple fields
+  - Combine filters with text search
+  - Dynamic filter options based on current inventory
+
+- 📧 **Reporting**
+  - Download inventory as CSV files
+
+- 💾 **Data Management**
+  - CSV-based data storage
+  - File locking for concurrent access
+  - Version control for concurrent edits
 
 ## 🧰 Tech Stack
 
 - Python 3.6+
 - Flask
 - Pandas
-- HTML
+- Portalocker (file locking)
+- HTML/CSS
 
 ## 🚀 Installation
 
@@ -48,14 +70,17 @@ shop_inventory/
 ├── build.ps1                # Windows PowerShell build script
 ├── inventory.csv            # Car inventory data
 ├── dealership.csv           # Dealership database
+├── inventory.lock           # File lock for concurrent access
 │
 └── templates/                   # HTML templates
     ├── base.html                # Base template with layout and navigation
     ├── index.html               # Homepage with inventory table
+    ├── login.html               # Authentication page
     ├── add_manually.html        # Form to add cars manually
     ├── add_from_database.html   # Form to add cars from dealership DB
     ├── remove.html              # Interface to remove cars from inventory
-    └── search.html              # Search interface
+    ├── search.html              # Search interface
+    └── edit.html                # Form to edit car details
 ```
 
 ## Running the Application
@@ -130,12 +155,16 @@ This script will:
 
 ## Usage
 
-1. **View Inventory**: The homepage displays all cars currently in inventory
-2. **Add Cars**:
+1. **Login**: Use the default credentials (username: admin, password: admin123) to access the application
+2. **View Inventory**: The homepage displays all cars currently in inventory
+3. **Add Cars**:
    - Click "Add Manually" to enter all car details directly
    - Click "Add from Database" to select from existing manufacturers and models
-3. **Remove Cars**: Use the remove functionality to decrease quantities or completely remove vehicles
-4. **Search**: Use the search function to filter inventory based on different criteria
+4. **Edit Cars**: Click on the edit button next to any vehicle to modify its details
+5. **Remove Cars**: Use the remove functionality to decrease quantities or completely remove vehicles
+6. **Search**: Use the search function to filter inventory based on different criteria
+7. **Reporting**:
+   - Download the inventory as a CSV file
 
 ## Data Files
 
@@ -147,11 +176,21 @@ Contains the actual inventory with columns:
 - Year
 - Colour
 - Quantity
+- Version (for concurrent edit control)
 
 ### dealership.csv
 Contains available makes and models with columns:
 - Company
 - Model
 
+## Security Features
+
+- Password-protected login system
+- Session management for secure access
+- File locking to prevent data corruption during concurrent operations
+- Version control to prevent conflicts during concurrent editing
+
 ## Demo Video
+
+Watch a demonstration of the application features:
 https://drive.google.com/file/d/1XqB_C28z01U-Vjt_xFSCHk-9G7pHP-fM/view?usp=sharing

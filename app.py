@@ -312,21 +312,59 @@ def search_inventory():
         flash('Inventory is empty', 'info')
         return redirect(url_for('index'))
     
-    if request.method == 'POST':
-        search_type = request.form['search_type']
-        search_term = request.form['search_term'].strip().lower()
-        search_performed = True
-        
-        if search_type == 'company':
-            results = inventory[inventory["Company"].str.lower().str.contains(search_term)]
-        elif search_type == 'model':
-            results = inventory[inventory["Model"].str.lower().str.contains(search_term)]
-        elif search_type == 'year':
-            results = inventory[inventory["Year"].astype(str) == search_term]
-        elif search_type == 'colour':
-            results = inventory[inventory["Colour"].str.lower().str.contains(search_term)]
+    # Get unique values for filters
+    companies = sorted(inventory['Company'].unique())
+    years = sorted(inventory['Year'].unique())
+    colours = sorted(inventory['Colour'].unique())
     
-    return render_template('search.html', results=results, search_performed=search_performed)
+    if request.method == 'POST':
+        search_performed = True
+        filtered_inventory = inventory.copy()
+        
+        # Apply filters
+        company_filter = request.form.get('company_filter')
+        year_filter = request.form.get('year_filter')
+        colour_filter = request.form.get('colour_filter')
+        search_term = request.form.get('search_term', '').strip().lower()
+        
+        # Apply each filter if it's set
+        if company_filter:
+            filtered_inventory = filtered_inventory[filtered_inventory['Company'] == company_filter]
+        if year_filter:
+            filtered_inventory = filtered_inventory[filtered_inventory['Year'].astype(str) == year_filter]
+        if colour_filter:
+            filtered_inventory = filtered_inventory[filtered_inventory['Colour'] == colour_filter]
+            
+        # Apply search term across multiple fields if provided
+        if search_term:
+            mask = (
+                filtered_inventory['Company'].str.lower().str.contains(search_term, na=False) |
+                filtered_inventory['Model'].str.lower().str.contains(search_term, na=False) |
+                filtered_inventory['Colour'].str.lower().str.contains(search_term, na=False)
+            )
+            filtered_inventory = filtered_inventory[mask]
+        
+        results = filtered_inventory
+        
+        # Pass the filter values back to the template
+        return render_template('search.html',
+                             results=results,
+                             search_performed=search_performed,
+                             companies=companies,
+                             years=years,
+                             colours=colours,
+                             company_filter=company_filter,
+                             year_filter=year_filter,
+                             colour_filter=colour_filter,
+                             search_term=search_term)
+    
+    # GET request - show empty form with filter options
+    return render_template('search.html',
+                         results=results,
+                         search_performed=search_performed,
+                         companies=companies,
+                         years=years,
+                         colours=colours)
 
 @app.route('/edit/<int:car_id>', methods=['GET', 'POST'])
 @login_required
