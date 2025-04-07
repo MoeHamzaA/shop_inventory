@@ -100,7 +100,8 @@ def add_manually():
                 "Model": model,
                 "Year": year,
                 "Colour": colour,
-                "Quantity": quantity
+                "Quantity": quantity,
+                "Version": 1  # Initialize version to 1 for new cars
             }])
             df = pd.concat([df, new_row], ignore_index=True)
             flash(f'Added new car to inventory (ID: {len(df)})', 'success')
@@ -182,7 +183,8 @@ def add_from_database():
                 "Model": selected_model,
                 "Year": year,
                 "Colour": colour,
-                "Quantity": quantity
+                "Quantity": quantity,
+                "Version": 1  # Initialize version to 1 for new cars
             }])
             df = pd.concat([df, new_row], ignore_index=True)
             flash(f'Added new car to inventory (ID: {len(df)})', 'success')
@@ -314,42 +316,55 @@ def edit_car(car_id):
     car = inventory.loc[mask].iloc[0]
     
     if request.method == 'POST':
-        # Get the version number from the form
-        submitted_version = int(request.form.get('version', 0))
-        current_version = car["Version"]
-        
-        # Check for concurrent modifications
-        if submitted_version != current_version:
-            flash('This car was modified by another user while you were editing. Please review the changes and try again.', 'danger')
-            return redirect(url_for('edit_car', car_id=car_id))
-        
-        year = request.form['year'].strip()
-        colour = request.form['colour'].strip().title()
-        
         try:
-            quantity = int(request.form['quantity'].strip())
-            if quantity < 0:
-                flash('Quantity cannot be negative', 'danger')
-                return render_template('edit.html', car=car)
-        except ValueError:
-            flash('Please enter a valid number for quantity', 'danger')
-            return render_template('edit.html', car=car)
+            # Get the version number from the form, default to 0 if not provided or invalid
+            submitted_version = request.form.get('version', '0')
+            try:
+                submitted_version = int(submitted_version)
+            except (ValueError, TypeError):
+                submitted_version = 0
             
-        # Validate year input
-        if not (year.isdigit() and len(year) == 4):
-            flash('Invalid year format. Please enter a 4-digit year', 'danger')
+            current_version = car.get("Version", 1)
+            
+            # Check for concurrent modifications
+            if submitted_version != current_version:
+                # Reload the current car data
+                current_car = inventory.loc[mask].iloc[0]
+                flash(f'''This car was modified by another user while you were editing. 
+                    Current values: Year: {current_car['Year']}, Colour: {current_car['Colour']}, 
+                    Quantity: {current_car['Quantity']}''', 'warning')
+                return render_template('edit.html', car=current_car)
+            
+            year = request.form['year'].strip()
+            colour = request.form['colour'].strip().title()
+            
+            try:
+                quantity = int(request.form['quantity'].strip())
+                if quantity < 0:
+                    flash('Quantity cannot be negative', 'danger')
+                    return render_template('edit.html', car=car)
+            except ValueError:
+                flash('Please enter a valid number for quantity', 'danger')
+                return render_template('edit.html', car=car)
+                
+            # Validate year input
+            if not (year.isdigit() and len(year) == 4):
+                flash('Invalid year format. Please enter a 4-digit year', 'danger')
+                return render_template('edit.html', car=car)
+            
+            # Update the car details
+            car_idx = inventory.loc[mask].index[0]
+            inventory.loc[car_idx, "Year"] = year
+            inventory.loc[car_idx, "Colour"] = colour
+            inventory.loc[car_idx, "Quantity"] = quantity
+            inventory.loc[car_idx, "Version"] = current_version + 1
+            
+            save_inventory(inventory)
+            flash('Car details updated successfully', 'success')
+            return redirect(url_for('index'))
+        except Exception as e:
+            flash(f'An error occurred while updating the car: {str(e)}', 'danger')
             return render_template('edit.html', car=car)
-        
-        # Update the car details
-        car_idx = inventory.loc[mask].index[0]
-        inventory.loc[car_idx, "Year"] = year
-        inventory.loc[car_idx, "Colour"] = colour
-        inventory.loc[car_idx, "Quantity"] = quantity
-        inventory.loc[car_idx, "Version"] = current_version + 1
-        
-        save_inventory(inventory)
-        flash('Car details updated successfully', 'success')
-        return redirect(url_for('index'))
     
     return render_template('edit.html', car=car)
 

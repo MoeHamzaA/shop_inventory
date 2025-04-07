@@ -41,6 +41,8 @@ def load_inventory():
             df["ID"] = range(1, len(df) + 1)
         if "Version" not in df.columns:
             df["Version"] = 1
+        # Convert Version column to integer
+        df["Version"] = df["Version"].fillna(1).astype(int)
         return df
     except (FileNotFoundError, pd.errors.EmptyDataError):
         return pd.DataFrame(columns=["ID", "Company", "Model", "Year", "Colour", "Quantity", "Version"])
@@ -53,6 +55,8 @@ def save_inventory(df):
         df["ID"] = range(1, len(df) + 1)
         if "Version" not in df.columns:
             df["Version"] = 1
+        # Convert Version column to integer
+        df["Version"] = df["Version"].fillna(1).astype(int)
         df.to_csv(INVENTORY_FILE, index=False)
     finally:
         release_lock(lock)
